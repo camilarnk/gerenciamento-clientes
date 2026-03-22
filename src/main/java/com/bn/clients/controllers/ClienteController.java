@@ -34,14 +34,25 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<ClienteModel>> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ClienteModel> buscarPorId(@PathVariable Long id) {
         Optional<ClienteModel> request = clienteService.buscarPorId(id);
-        return ResponseEntity.ok().body(request);
+
+        if(request.isPresent()) {
+            return ResponseEntity.ok(request.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarCliente(@PathVariable Long id) {
-        clienteService.deletarCliente(id);
-        return ResponseEntity.noContent().build();
+        Optional<ClienteModel> request = clienteService.buscarPorId(id);
+
+        if(request.isPresent()) {
+            clienteService.deletarCliente(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
